@@ -1,0 +1,9 @@
+services:
+  keybot:
+    restart: always
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - ${PWD}/data:/data

@@ -1,0 +1,9 @@
+/data
+.env
+compose.yaml
+.gitignore
+.git
+.idea
+dev.yaml
+Docker
+Dockerfile

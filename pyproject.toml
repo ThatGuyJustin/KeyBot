@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "freekeys-solace"
+version = "0.1.0"
+description = ""
+authors = ["Justin <justin@aperturebot.science>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+python-dotenv = "^1.0.1"
+betterdisco-py = {git = "https://github.com/elderlabs/BetterDisco.git", rev = "staging/justin", extras = ["performance", "yaml"]}
+peewee = "^3.17.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

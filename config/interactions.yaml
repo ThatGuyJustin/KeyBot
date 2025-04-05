@@ -1,0 +1,41 @@
+commands:
+  global:
+    chat_input:
+      - name: "add-key"
+        description: "Add a key for people to claim."
+        default_member_permissions: "32"
+        contexts: [0]
+    message:
+      - name: "Get Key Info"
+        default_member_permissions: "32"
+        contexts: [ 0 ]
+
+components:
+  add_keys_modal:
+    title: "Add New Key"
+    custom_id: "add_key"
+    components:
+      - type: 1
+        components:
+          - type: 4
+            style: 1
+            label: "Title"
+            placeholder: "BlubBlub RPG II: Getting Dat Grape Ginger Ale!"
+            required: true
+            custom_id: "title"
+      - type: 1
+        components:
+          - type: 4
+            style: 1
+            label: "Platform"
+            placeholder: "Xbone | Steam | BadStation | UrMum | FatYoshi | 🐉"
+            required: true
+            custom_id: "platform"
+      - type: 1
+        components:
+          - type: 4
+            style: 1
+            label: "Product Key"
+            placeholder: "B6BYC-6T7C3-4PXRW-2XKWB-GYV33"
+            required: true
+            custom_id: "key"

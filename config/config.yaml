@@ -1,0 +1,5 @@
+bot:
+  commands_enabled: false
+  plugins:
+    - KeyBot.plugins.core
+    - KeyBot.plugins.keys
