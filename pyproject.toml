@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "freekeys-solace"
-version = "0.1.0"
-description = ""
+name = "keybot"
+version = "1.0.0"
+description = "A discord bot to give away free keys. Made for a friend."
 authors = ["Justin <justin@aperturebot.science>"]
 readme = "README.md"
 

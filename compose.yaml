@@ -1,9 +1,9 @@
 services:
   keybot:
     restart: always
-    build:
-      context: .
-    env_file:
-      - .env
+    image: ghcr.io/thatguyjustin/keybot:main
+    environment:
+      DISCORD_TOKEN: DISCORD_BOT_TOKEN_HERE
+      FREE_KEYS_CHANNEL: CHANNEL_ID_FOR_KEY_MESSAGES
     volumes:
-      - ${PWD}/data:/data
+      - ${PWD}/data:/app/data
