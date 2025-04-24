@@ -125,7 +125,7 @@ class KeysPlugin(Plugin):
 
             components += [separator_component, claimed_by]
 
-        event.reply(type=4, components=components, flags=(MessageFlags.EPHEMERAL | MessageFlags.IS_COMPONENTS_V2))
+        event.reply(type=4, components=[component.to_dict() for component in components], flags=(MessageFlags.EPHEMERAL | MessageFlags.IS_COMPONENTS_V2))
 
     @Plugin.listen("InteractionCreate", conditional=lambda e: e.type == InteractionType.MESSAGE_COMPONENT and e.data.custom_id.startswith("claim_key_"))
     def claim_key(self, event):
