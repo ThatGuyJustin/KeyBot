@@ -4,7 +4,8 @@ from datetime import datetime, UTC as UTC_TIMEZONE
 import yaml
 from disco.bot import Plugin
 from disco.types.application import InteractionType
-from disco.types.message import MessageComponent, ComponentTypes, ButtonStyles, ActionRow
+from disco.types.message import MessageComponent, ComponentTypes, ButtonStyles, ActionRow, SeparatorComponent, \
+    SeparatorSpacingSize, TextDisplayComponent, ContainerComponent, SectionComponent, ThumbnailComponent, MessageFlags
 
 from KeyBot.models.keys import FreeKey
 
@@ -65,7 +66,7 @@ class KeysPlugin(Plugin):
         db_key.message = f"{event.guild.id}/{message.channel.id}/{message.id}"
         db_key.save()
 
-        event.reply(type=4, content="🔑 Key Submitted.", flags=(1 << 6))
+        event.reply(type=4, content="🔑 Key Submitted.", flags=MessageFlags.EPHEMERAL)
 
     @Plugin.listen("InteractionCreate", conditional=lambda e: e.type == InteractionType.APPLICATION_COMMAND and e.data.name == "Get Key Info")
     def get_key_info(self, event):
@@ -73,22 +74,58 @@ class KeysPlugin(Plugin):
         db_key = FreeKey.get_or_none(message=to_check_for)
 
         if not db_key:
-            return event.reply(type=4, content="ERROR: `❌ This message does not correspond to a key I can give away. ❌`", flags=(1 << 6))
+            return event.reply(type=4, content="ERROR: `❌ This message does not correspond to a key I can give away. ❌`", flags=MessageFlags.EPHEMERAL)
 
-        message = (f"## [Information For Key `{db_key.id}`](https://discord.com/channels/{to_check_for})"
-                   "\n### Title"
-                   f"\n{db_key.title}"
-                   "\n### Platform"
-                   f"\n{db_key.platform}"
-                   "\n### Key"
-                   f"\n||{db_key.key}||"
-                   "\n### Submitter"
-                   f"\n<@{db_key.submitter}> (<t:{int(datetime.strptime(db_key.submitted_at, DATETIME_FORMAT).timestamp())}:F> <t:{int(datetime.strptime(db_key.submitted_at, DATETIME_FORMAT).timestamp())}:R>)")
+        separator_component = SeparatorComponent(spacing=SeparatorSpacingSize.SMALL)
+
+        txt_component = TextDisplayComponent(
+            content=f"## [Information For Key `{db_key.id}`](https://discord.com/channels/{db_key.message})", id=100)
+
+        information_container = ContainerComponent(
+            id=300,
+        )
+        information_container.components = [
+            TextDisplayComponent(content="### Title", id=101),
+            TextDisplayComponent(content=f"{db_key.title}", id=102),
+            SeparatorComponent(spacing=SeparatorSpacingSize.SMALL),
+            TextDisplayComponent(content="### Platform", id=103),
+            TextDisplayComponent(content=f"{db_key.platform}", id=104),
+            SeparatorComponent(spacing=SeparatorSpacingSize.SMALL),
+            TextDisplayComponent(content="### Key", id=105),
+            TextDisplayComponent(content=f"||{db_key.key}||", id=106)
+        ]
+
+        submitted_user = self.client.api.users_get(db_key.submitter)
+        submitted_by = SectionComponent(
+            id=301
+        )
+        submitted_by.components = [
+            TextDisplayComponent(content="### Submitter", id=201),
+            TextDisplayComponent(
+                content=f"<@{db_key.submitter}> (<t:{int(datetime.strptime(db_key.submitted_at, DATETIME_FORMAT).timestamp())}:F> <t:{int(datetime.strptime(db_key.submitted_at, DATETIME_FORMAT).timestamp())}:R>)",
+                id=202)
+        ]
+        submitted_by.accessory = ThumbnailComponent(media={'url': submitted_user.get_avatar_url()})
+
+        components = [txt_component, information_container, separator_component, submitted_by]
 
         if db_key.claimer:
-            message += f"\n### Claimed By\n<@{db_key.claimer}> (<t:{int(datetime.strptime(db_key.claimed_at, DATETIME_FORMAT).timestamp())}:F> <t:{int(datetime.strptime(db_key.claimed_at, DATETIME_FORMAT).timestamp())}:R>)"
+            claimed_user = self.client.api.users_get(db_key.claimer)
 
-        event.reply(type=4, content=message, flags=(1 << 6))
+            claimed_by = SectionComponent(
+                id=302
+            )
+            claimed_by.components = [
+                TextDisplayComponent(content="### Claimed By", id=203),
+                TextDisplayComponent(
+                    content=f"<@{db_key.claimer}> (<t:{int(datetime.strptime(db_key.claimed_at, DATETIME_FORMAT).timestamp())}:F> <t:{int(datetime.strptime(db_key.claimed_at, DATETIME_FORMAT).timestamp())}:R>)",
+                    id=204)
+            ]
+            claimed_by.accessory = ThumbnailComponent(media={'url': claimed_user.get_avatar_url()})
+
+            components += [separator_component, claimed_by]
+
+        event.reply(type=4, components=components, flags=(MessageFlags.EPHEMERAL | MessageFlags.IS_COMPONENTS_V2))
 
     @Plugin.listen("InteractionCreate", conditional=lambda e: e.type == InteractionType.MESSAGE_COMPONENT and e.data.custom_id.startswith("claim_key_"))
     def claim_key(self, event):

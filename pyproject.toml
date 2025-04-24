@@ -1,16 +1,22 @@
-[tool.poetry]
+[project]
 name = "keybot"
 version = "1.0.0"
 description = "A discord bot to give away free keys. Made for a friend."
-authors = ["Justin <justin@aperturebot.science>"]
+authors = [
+    {name = "Justin",email = "justin@aperturebot.science"}
+]
 readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "betterdisco-py[performance,yaml] @ git+https://github.com/elderlabs/BetterDisco.git@1780ca6ede80fd9e971c4bf9d7e91569e139a8b1",
+    "peewee (>=3.17.9,<4.0.0)",
+    "python-dotenv (>=1.1.0,<2.0.0)"
+]
 
 [tool.poetry.dependencies]
-python = "^3.12"
-python-dotenv = "^1.0.1"
-betterdisco-py = {git = "https://github.com/elderlabs/BetterDisco.git", rev = "staging/justin", extras = ["performance", "yaml"]}
-peewee = "^3.17.5"
+betterdisco-py = { develop=false }
+
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
